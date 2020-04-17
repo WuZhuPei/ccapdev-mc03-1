@@ -17,6 +17,20 @@ $(document).ready(function () {
     */
     $('#number').keyup(function () {
         // your code here
+        var pnumber = $('#number').val();
+
+        $.get('/getCheckNumber', {number: pnumber}, function(result){
+            if (result.number == pnumber){
+                $('#number').css('background-color', 'red');
+                $('#error').text('Number already registered');
+                $('#submit').prop('disabled', true);
+            }
+            else {
+                $('#number').css('background-color', '#E3E3E3');
+                $('#error').text('');
+                $('#submit').prop('disabled', false);
+            }
+        })
     });
 
     /*
@@ -30,8 +44,23 @@ $(document).ready(function () {
 
             The name and the number fields are reset to empty values.
     */
+
+
     $('#submit').click(function () {
         // your code here
+       var uname = $('#name').val();
+       var unumber = $('#number').val();
+
+       if (uname !== '' && unumber !== '') {
+           $.get('/add', {name: uname, number: unumber}, function(result){
+                $('#name').val('');
+                $('#number').val('');
+                $('#contacts').append(result);
+           });
+       }
+       else {
+           $('#error').text('fill up the missing fields')
+       }
     });
 
     /*
@@ -43,6 +72,14 @@ $(document).ready(function () {
     */
     $('#contacts').on('click', '.remove', function () {
         // your code here
+        var uInfo = $(this).parent().find('.text')[1];
+        var unumber = $(uInfo).text();
+        var parent = $(this).parent();
+        $.get('/delete', {number: unumber}, function(result) {
+            if (result){
+                parent.remove();
+            }
+        })
     });
 
 })
